@@ -9,14 +9,14 @@ export type SourceDeviceStateProps = {
     name: string;
     thumbnail: unknown[];
   }[];
-  audioInput?: {
+  audioInputs?: {
     deviceId: string;
     kind: string;
     label: string;
     groupId: string;
   }[];
   error?: string | null;
-  isPending: boolean;
+  isPending?: boolean;
 };
 
 type DisplayDeviceActionProps = {
@@ -25,11 +25,8 @@ type DisplayDeviceActionProps = {
 };
 
 export const useMediaSources = () => {
-  const [state, dispatch] = useReducer(
-    (
-      state: SourceDeviceStateProps,
-      action: DisplayDeviceActionProps
-    ): SourceDeviceStateProps => {
+  const [state, action] = useReducer(
+    (state: SourceDeviceStateProps, action: DisplayDeviceActionProps) => {
       switch (action.type) {
         case "GET_DEVICES":
           return { ...state, ...action.payload };
@@ -39,27 +36,24 @@ export const useMediaSources = () => {
     },
     {
       displays: [],
-      audioInput: [],
+      audioInputs: [],
       error: null,
       isPending: false,
-    } as SourceDeviceStateProps
+    }
   );
 
-  const fetchMediaResources = async () => {
-    dispatch({
-      type: "GET_DEVICES",
-      payload: { isPending: true } as SourceDeviceStateProps,
-    });
-    getMediaSources().then((sources) => {
-      dispatch({
+  const fetchMediaResources = () => {
+    action({ type: "GET_DEVICES", payload: { isPending: true } });
+    getMediaSources().then((sources) =>
+      action({
         type: "GET_DEVICES",
         payload: {
           displays: sources.displays,
-          audioInput: sources.audio,
           isPending: false,
+          audioInputs: sources.audio,
         },
-      });
-    });
+      })
+    );
   };
 
   return { state, fetchMediaResources };

@@ -1,13 +1,14 @@
 import { useMediaSources } from "@/hooks/useMediaSources";
 import { fetchUserProfile } from "@/lib/utils";
 import { ClerkLoading, SignedIn, useUser } from "@clerk/clerk-react";
-import Loader from "../Loader";
 import { useEffect, useState } from "react";
-import MediaConfiguration from "../MediaConfiguration";
+import { Spinner } from "../loader/spinner";
+import { MediaConfiguration } from "./media-configuration";
 
-const Widget = () => {
+export const Widget = () => {
   const { user } = useUser();
-  const {state, fetchMediaResources} = useMediaSources()
+  const { state, fetchMediaResources } = useMediaSources();
+
   const [profile, setProfile] = useState<{
     status: number;
     user:
@@ -21,22 +22,24 @@ const Widget = () => {
             mic: string | null;
             preset: "HD" | "SD";
             camera: string | null;
-            userID: string | null;
+            userId: string | null;
           } | null;
         } & {
           id: string;
           email: string;
-          firstName: string | null;
-          lastName: string | null;
+          firstname: string | null;
+          lastname: string | null;
           createdAt: Date;
           clerkid: string;
         })
       | null;
   } | null>(null);
-
+  //fetch user data from data base using clerk id
   useEffect(() => {
+    console.log("fetching");
     if (user && user.id) {
       fetchUserProfile(user.id).then((p) => setProfile(p));
+      fetchMediaResources();
     }
   }, [user]);
 
@@ -44,23 +47,18 @@ const Widget = () => {
     <div className="p-5">
       <ClerkLoading>
         <div className="h-full flex justify-center items-center">
-          <Loader state={false} />
+          <Spinner />
         </div>
       </ClerkLoading>
       <SignedIn>
         {profile ? (
-          <MediaConfiguration 
-            state={state}
-            user={profile.user}
-          />
+          <MediaConfiguration state={state} user={profile?.user} />
         ) : (
-          <div className="w-full f-full flex justify-center items-center">
-            <Loader state={false} color="white" />
+          <div className="w-full h-full flex justify-center items-center">
+            <Spinner color="#fff" />
           </div>
         )}
       </SignedIn>
     </div>
   );
 };
-
-export default Widget;

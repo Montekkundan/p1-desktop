@@ -1,9 +1,9 @@
-import { updateStudioSettingsSchema } from "@/schemas/studio-settings.schema";
-import { useZodForm } from "./useZodForm";
-import { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 import { updateStudioSettings } from "@/lib/utils";
+import { updateStudioSettingsSchema } from "@/schemas/studio-settings.schema";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useZodForm } from "./useZodForm";
 
 export const useStudioSettings = (
   id: string,
@@ -12,12 +12,13 @@ export const useStudioSettings = (
   preset?: "HD" | "SD",
   plan?: "PRO" | "FREE"
 ) => {
-  const [onPreset, setOnPreset] = useState<"HD" | "SD" | undefined>();
   const { register, watch } = useZodForm(updateStudioSettingsSchema, {
     screen: screen!,
     audio: audio!,
     preset: preset!,
   });
+
+  const [onPreset, setPreset] = useState<"HD" | "SD" | undefined>();
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["update-studio"],
@@ -27,7 +28,7 @@ export const useStudioSettings = (
       audio: string;
       preset: "HD" | "SD";
     }) => updateStudioSettings(data.id, data.screen, data.audio, data.preset),
-    onSuccess: (data: { status: number; message: string }) => {
+    onSuccess: (data) => {
       return toast(data.status === 200 ? "Success" : "Error", {
         description: data.message,
       });
@@ -35,36 +36,38 @@ export const useStudioSettings = (
   });
 
   useEffect(() => {
-    if (screen && audio) {
+    //set sources on mount
+    if (screen && audio && preset)
       window.ipcRenderer.send("media-sources", {
-        id:id,
         screen,
+        id: id,
         audio,
         preset,
         plan,
       });
-    }
-  }, [audio, screen]);
+  }, []);
 
   useEffect(() => {
+    //set sources on change
     const subscribe = watch((values) => {
-      setOnPreset(values.preset);
+      setPreset(values.preset);
       mutate({
         screen: values.screen!,
-        audio: values.audio!,
-        preset: values.preset!,
-        id,
-      });
-      window.ipcRenderer.send("media-sources", {
         id: id,
-        screen: values.screen!,
         audio: values.audio!,
         preset: values.preset!,
+      });
+      //we send the user id to the second screen to sync the studio tray
+      window.ipcRenderer.send("media-sources", {
+        screen: values.screen,
+        id: id,
+        audio: values.audio,
+        preset: values.preset,
         plan,
       });
     });
     return () => subscribe.unsubscribe();
-  }, [id, mutate, plan, watch]);
+  }, [watch]);
 
   return { register, isPending, onPreset };
 };

@@ -6,11 +6,6 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -23,7 +18,11 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src", "electron"],
   "references": [{ "path": "./tsconfig.node.json" }]

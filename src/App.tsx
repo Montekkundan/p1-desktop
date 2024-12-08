@@ -1,22 +1,21 @@
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
-import './App.css'
-import { Toaster } from 'sonner'
-import ControlLayer from './layouts/ControlLayer'
-import AuthButton from './components/Global/AuthButton'
-import Widget from './components/Global/Widget'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
+import { AuthButton } from "./components/global/auth-buttons";
+import { Widget } from "./components/global/widget";
+import { ControlLayout } from "./layouts/control-layout";
 
-const queryClient = new QueryClient()
+const client = new QueryClient();
 
-function App() {
+const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ControlLayer>
+    <QueryClientProvider client={client}>
+      <ControlLayout>
         <AuthButton />
         <Widget />
-      </ControlLayer>
+      </ControlLayout>
       <Toaster />
     </QueryClientProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;
