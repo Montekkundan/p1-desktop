@@ -1,4 +1,4 @@
-import { cn, onCloseApp } from "@/lib/utils";
+import { cn, onCloseApp, platform } from "@/lib/utils";
 import { UserButton } from "@clerk/clerk-react";
 import { X } from "lucide-react";
 import React, { useState } from "react";
@@ -19,17 +19,19 @@ const ControlLayer = ({ children, className }: Props) => {
     <div className={cn(
         className, 
         isVisible && "invisible",
-        "bg-[#171717] flex px-1 flex-col rounded-3xl overflow-hidden"
+        "bg-[#171717] border-2 border-neutral-700 flex px-1 flex-col rounded-3xl overflow-hidden"
     )}>
         <div className="flex justify-between items-center p-5 draggable">
             <span className="non-draggable">
                 <UserButton />
             </span>
-            <X
-             size={20}
-             className="text-gray-400 non-draggable hover:text-white cursor-pointer"
-             onClick={onCloseApp}
-            />
+            {platform !== 'darwin' && (
+              <X
+                size={20}
+                className="text-gray-400 non-draggable hover:text-white cursor-pointer"
+                onClick={onCloseApp}
+              />
+            )}
         </div>
         <div className="flex-1 h-0 overflow-y-auto">
            {children}

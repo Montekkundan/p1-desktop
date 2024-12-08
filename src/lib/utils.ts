@@ -41,3 +41,22 @@ export const updateStudioSettings = async (
   })
   return res.data
 }
+
+export const platform = process.platform;
+
+export const hidePluginWindow = (state:boolean) => {
+  window.ipcRenderer.send('hide-plugin', state)
+}
+
+export const videoRecordingTime = (ms: number) => {
+  const second = Math.floor((ms / 1000) % 60)
+  .toString()
+  .padStart(2, '0')
+  const minute = Math.floor((ms / 1000 / 60) % 60)
+  .toString()
+  .padStart(2, '0')
+  const hour = Math.floor((ms / 1000 / 60 / 60))
+  .toString()
+  .padStart(2, '0')
+  return { length: `${hour}:${minute}:${second}`, minute }
+}
