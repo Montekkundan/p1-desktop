@@ -34,7 +34,7 @@ export const ControlLayout = ({ children, className }: ControlLayoutProps) => {
       <div className="flex-1 h-0 overflow-auto">{children}</div>
       <div className="p-5 flex w-full">
         <div className="flex items-center gap-x-2">
-          <img src="/p1-logo.svg" />
+          {/* <img src="/p1-logo.svg" /> */}
           <p className="text-white text-2xl">p1</p>
         </div>
       </div>
